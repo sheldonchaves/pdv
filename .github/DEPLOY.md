@@ -24,6 +24,8 @@ O projeto está configurado com `baseHref: '/pdv/'` no `angular.json`.
    }
    ```
 
+
+
 ### 3. Fazer o Primeiro Deploy
 
 1. Adicione e faça commit dos arquivos:
