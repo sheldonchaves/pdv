@@ -26,6 +26,12 @@
             [value]="searchTerm()"
             (input)="onSearchChange($any($event.target).value)"
           />
+          <button 
+            class="text-slate-400 flex border-none bg-white items-center justify-center pr-4 hover:text-brand-orange transition-colors"
+            title="Escanear código de barras/QR Code"
+          >
+            <i class="bi bi-upc-scan text-xl"></i>
+          </button>
         </div>
       </label>
     </div>
@@ -51,12 +57,16 @@
     </div>
   </header>
 
-  <div class="flex flex-1 overflow-hidden">
+  <div class="flex flex-1 overflow-hidden min-w-0">
     <!-- Sidebar -->
     <aside 
       class="bg-brand-blue border-r border-white/10 flex flex-col shrink-0 overflow-y-auto no-scrollbar text-white transition-all duration-300"
       [class.w-64]="!sidebarMinimized()"
+      [class.min-w-64]="!sidebarMinimized()"
+      [class.max-w-64]="!sidebarMinimized()"
       [class.w-16]="sidebarMinimized()"
+      [class.min-w-16]="sidebarMinimized()"
+      [class.max-w-16]="sidebarMinimized()"
     >
       <div class="p-6">
         @if (!sidebarMinimized()) {
@@ -92,7 +102,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 bg-background-light overflow-y-auto flex flex-col">
+    <main class="flex-1 bg-background-light overflow-y-auto flex flex-col min-w-0">
       <router-outlet></router-outlet>
     </main>
 

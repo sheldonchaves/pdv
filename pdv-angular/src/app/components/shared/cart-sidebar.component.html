@@ -1,7 +1,11 @@
 <aside 
-  class="border-l border-slate-200 bg-white flex flex-col shrink-0 transition-all duration-300 relative"
+  class="border-l border-slate-200 bg-white flex flex-col shrink-0 transition-all duration-300 relative overflow-hidden"
   [class.w-80]="!minimized()"
+  [class.min-w-80]="!minimized()"
+  [class.max-w-80]="!minimized()"
   [class.w-16]="minimized()"
+  [class.min-w-16]="minimized()"
+  [class.max-w-16]="minimized()"
 >
   <div class="p-4 border-b border-slate-200 flex items-center justify-between">
     @if (!minimized()) {
