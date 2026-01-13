@@ -1,0 +1,102 @@
+<div class="bg-background-light text-slate-900 font-display overflow-hidden h-screen flex flex-col">
+  <!-- Header -->
+  <header class="flex items-center justify-between whitespace-nowrap bg-brand-blue border-b border-white/10 px-6 py-3 shrink-0 text-white">
+    <div class="flex items-center gap-6">
+      <button 
+        class="flex items-center justify-center rounded-lg size-10 bg-white/10 text-white hover:bg-white/20 transition-colors"
+        (click)="toggleSidebar()"
+        title="Minimizar/Maximizar Menu"
+      >
+        <i class="bi bi-list text-xl"></i>
+      </button>
+      <a routerLink="/" class="flex items-center gap-3 cursor-pointer">
+        <div class="size-8 bg-brand-yellow rounded flex items-center justify-center text-brand-blue">
+          <i class="bi bi-cash-register text-xl"></i>
+        </div>
+        <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Millena PDV</h2>
+      </a>
+      <label class="flex flex-col min-w-64 !h-10 max-w-96">
+        <div class="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden">
+          <div class="text-slate-400 flex border-none bg-white items-center justify-center pl-4">
+            <i class="bi bi-search text-xl text-brand-orange"></i>
+          </div>
+          <input 
+            class="form-input flex w-full min-w-0 flex-1 border-none bg-white text-slate-900 focus:ring-0 h-full placeholder:text-slate-400 px-4 pl-2 text-base font-normal leading-normal" 
+            placeholder="Buscar produtos, SKUs..."
+            [value]="searchTerm()"
+            (input)="onSearchChange($any($event.target).value)"
+          />
+        </div>
+      </label>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3 mr-4">
+        <div class="text-right hidden sm:block">
+          <p class="text-[10px] uppercase tracking-wider text-brand-yellow font-bold leading-none">Vendedor Logado</p>
+          <p class="text-sm font-semibold">{{ userService.currentUser().name }}</p>
+        </div>
+        <div 
+          class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-brand-yellow" 
+          [style.background-image]="'url(' + userService.currentUser().avatar + ')'"
+        ></div>
+      </div>
+      <div class="flex gap-2">
+        <button class="flex items-center justify-center rounded-lg size-10 bg-white/10 text-white hover:bg-white/20 transition-colors" title="Notificações">
+          <i class="bi bi-bell text-brand-orange"></i>
+        </button>
+        <button class="flex items-center justify-center rounded-lg size-10 bg-white/10 text-white hover:bg-white/20 transition-colors" title="Configurações">
+          <i class="bi bi-gear text-brand-orange"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <aside 
+      class="bg-brand-blue border-r border-white/10 flex flex-col shrink-0 overflow-y-auto no-scrollbar text-white transition-all duration-300"
+      [class.w-64]="!sidebarMinimized()"
+      [class.w-16]="sidebarMinimized()"
+    >
+      <div class="p-6">
+        @if (!sidebarMinimized()) {
+          <div class="flex flex-col mb-6">
+            <h1 class="text-brand-yellow text-xs font-bold uppercase tracking-widest leading-normal">Categorias</h1>
+            <p class="text-blue-100 text-sm font-normal leading-normal">Catálogo Geral</p>
+          </div>
+        }
+        <nav class="flex flex-col gap-2">
+          @for (category of categories(); track category.id) {
+            <div 
+              class="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-colors relative group"
+              [class.bg-brand-yellow]="selectedCategory() === category.id"
+              [class.text-brand-blue]="selectedCategory() === category.id"
+              [class.shadow-md]="selectedCategory() === category.id"
+              [class.hover:bg-white/10]="selectedCategory() !== category.id"
+              [class.text-white]="selectedCategory() !== category.id"
+              [class.justify-center]="sidebarMinimized()"
+              (click)="onCategorySelect(category.id)"
+              [title]="sidebarMinimized() ? category.name : ''"
+            >
+              <i 
+                class="bi bi-{{ category.icon }} text-2xl"
+                [class.text-brand-orange]="selectedCategory() !== category.id && !sidebarMinimized()"
+              ></i>
+              @if (!sidebarMinimized()) {
+                <p class="text-sm" [class.font-bold]="selectedCategory() === category.id" [class.font-medium]="selectedCategory() !== category.id">{{ category.name }}</p>
+              }
+            </div>
+          }
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 bg-background-light overflow-y-auto flex flex-col">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <app-cart-sidebar></app-cart-sidebar>
+  </div>
+</div>

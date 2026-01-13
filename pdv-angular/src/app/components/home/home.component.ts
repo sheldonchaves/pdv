@@ -1,28 +1,25 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { UserService } from '../../services/user.service';
-import { CartSidebarComponent } from '../shared/cart-sidebar.component';
-import { IconComponent } from '../shared/icon.component';
 import { Product } from '../../models/product.model';
 import { Category } from '../../models/product.model';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, CartSidebarComponent, IconComponent],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
   searchTerm = signal<string>('');
   selectedCategory = signal<string>('moveis');
-  sidebarMinimized = signal<boolean>(false);
 
   constructor(
     private productService: ProductService,
@@ -31,9 +28,31 @@ export class HomeComponent implements OnInit {
     private router: Router
   ) {}
 
+  private categoryEffect = effect(() => {
+    const category = this.productService.selectedCategory();
+    if (category !== this.selectedCategory()) {
+      this.selectedCategory.set(category);
+      this.loadProducts();
+    }
+  });
+
+  private searchEffect = effect(() => {
+    const search = this.productService.searchTerm();
+    if (search !== this.searchTerm()) {
+      this.searchTerm.set(search);
+      this.loadProducts();
+    }
+  });
+
   ngOnInit(): void {
     this.categories.set(this.productService.getCategories());
+    this.selectedCategory.set(this.productService.selectedCategory());
+    this.searchTerm.set(this.productService.searchTerm());
     this.loadProducts();
+  }
+
+  ngOnDestroy(): void {
+    // Effects são automaticamente limpos quando o componente é destruído
   }
 
   loadProducts(): void {
@@ -80,9 +99,5 @@ export class HomeComponent implements OnInit {
   getCategoryName(): string {
     const category = this.categories().find(c => c.id === this.selectedCategory());
     return category?.name || 'Produtos';
-  }
-
-  toggleSidebar(): void {
-    this.sidebarMinimized.set(!this.sidebarMinimized());
   }
 }
