@@ -46,7 +46,7 @@
             },
             "github-pages": {
               "baseHref": "/pdv/",
-              "outputPath": "dist/pdv-angular/browser",
+              "outputPath": "dist/pdv-angular",
               "budgets": [
                 {
                   "type": "initial",
