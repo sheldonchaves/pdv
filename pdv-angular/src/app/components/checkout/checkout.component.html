@@ -1,0 +1,234 @@
+<div class="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 dark:text-slate-100 font-display">
+  <!-- Header -->
+  <header class="flex items-center justify-between whitespace-nowrap bg-brand-blue border-b border-brand-blue px-6 py-3 sticky top-0 z-50 text-white shadow-md">
+    <div class="flex items-center gap-4">
+      <div class="size-8 text-brand-yellow flex items-center justify-center">
+        <span class="material-symbols-outlined text-3xl">storefront</span>
+      </div>
+      <h2 class="text-white text-lg font-bold leading-tight tracking-tight">Millena Móveis PDV</h2>
+    </div>
+    <div class="flex flex-1 justify-end gap-6 items-center">
+      <nav class="hidden md:flex items-center gap-6">
+        <a class="text-white/90 text-sm font-medium hover:text-brand-yellow transition-colors cursor-pointer" (click)="router.navigate(['/'])">Vendas</a>
+        <a class="text-white/90 text-sm font-medium hover:text-brand-yellow transition-colors cursor-pointer">Estoque</a>
+        <a class="text-white/90 text-sm font-medium hover:text-brand-yellow transition-colors cursor-pointer">Clientes</a>
+        <a class="text-white/90 text-sm font-medium hover:text-brand-yellow transition-colors cursor-pointer">Relatórios</a>
+      </nav>
+      <div class="flex gap-2">
+        <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-white/10 hover:bg-white/20 text-white">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-white/10 hover:bg-white/20 text-white">
+          <span class="material-symbols-outlined">account_circle</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[1440px] mx-auto p-4 md:p-6 lg:p-10">
+    <div class="flex flex-col gap-2 mb-6">
+      <nav class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm font-medium">
+        <a class="cursor-pointer" (click)="router.navigate(['/'])">Início</a>
+        <span>/</span>
+        <span class="text-brand-blue font-bold">Pagamento Rápido</span>
+      </nav>
+      <div class="flex flex-wrap justify-between items-end gap-4">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-brand-blue dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Finalizar Pagamento</h1>
+          <p class="text-slate-500 dark:text-slate-400 text-base font-normal">Pedido #77421 - Terminal 04 • Operadora: Maria S.</p>
+        </div>
+        <div class="flex gap-3">
+          <button class="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-50">
+            <span class="material-symbols-outlined">print</span> Imprimir Orçamento
+          </button>
+          <button class="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-50">
+            <span class="material-symbols-outlined">pause</span> Suspender Venda
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (orderService.getCurrentOrder()) {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Column -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          <!-- Customer Card -->
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-brand-blue dark:text-white">Cliente</h3>
+              <button class="text-brand-blue hover:text-blue-700 text-sm font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">edit</span> Editar Perfil
+              </button>
+            </div>
+            <div class="flex gap-4">
+              <div 
+                class="size-16 rounded-lg bg-cover bg-center shrink-0 border border-slate-100"
+                [style.background-image]="'url(' + orderService.getCurrentOrder()!.customer.avatar + ')'"
+              ></div>
+              <div class="flex flex-col justify-center">
+                <p class="text-lg font-bold leading-tight">{{ orderService.getCurrentOrder()!.customer.name }}</p>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">CPF: {{ orderService.getCurrentOrder()!.customer.cpf }}</p>
+                @if (orderService.getCurrentOrder()!.customer.loyaltyPoints) {
+                  <div class="mt-2 flex items-center gap-2 bg-brand-yellow/20 text-brand-blue px-2 py-1 rounded-full text-xs font-bold w-fit">
+                    <span class="material-symbols-outlined text-xs">loyalty</span> {{ orderService.getCurrentOrder()!.customer.loyaltyPoints }} Pontos
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[500px]">
+            <h3 class="text-lg font-bold px-4 py-4 border-b border-slate-200 dark:border-slate-700 text-brand-blue dark:text-white">
+              Resumo do Pedido ({{ orderService.getCurrentOrder()!.items.length }} itens)
+            </h3>
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+              @for (item of orderService.getCurrentOrder()!.items; track item.product.id) {
+                <div class="flex gap-4 pb-4 border-b border-slate-100 dark:border-slate-700 last:border-0">
+                  <div 
+                    class="size-20 bg-gray-100 rounded-lg shrink-0 bg-cover bg-center" 
+                    [style.background-image]="'url(' + item.product.images[0] + ')'"
+                  ></div>
+                  <div class="flex-1">
+                    <p class="font-bold text-sm">{{ item.product.name }}</p>
+                    <p class="text-xs text-slate-500">SKU: {{ item.product.sku }}</p>
+                    <div class="flex justify-between items-end mt-2">
+                      <span class="text-xs font-medium">Qtd: {{ item.quantity }}</span>
+                      <span class="font-bold">R$ {{ formatPrice(item.product.price * item.quantity) }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-b-xl space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Subtotal</span>
+                <span class="font-medium">R$ {{ formatPrice(orderService.getCurrentOrder()!.subtotal) }}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Taxa de Entrega</span>
+                <span class="font-medium">R$ {{ formatPrice(orderService.getCurrentOrder()!.deliveryFee) }}</span>
+              </div>
+              <div class="flex justify-between text-sm text-green-600 font-bold">
+                <span>Desconto (Fidelidade)</span>
+                <span>- R$ {{ formatPrice(orderService.getCurrentOrder()!.discount) }}</span>
+              </div>
+              <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-end">
+                <span class="text-lg font-bold">Total</span>
+                <span class="text-2xl font-black text-brand-blue dark:text-brand-yellow">R$ {{ formatPrice(orderService.getCurrentOrder()!.total) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+          <!-- Payment Methods -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (method of paymentMethods(); track method.id) {
+              <button 
+                class="flex flex-col items-center justify-center p-6 rounded-xl shadow-sm transition-all"
+                [class.bg-white]="selectedPaymentMethod()?.id !== method.id"
+                [class.dark:bg-slate-800]="selectedPaymentMethod()?.id !== method.id"
+                [class.border-2]="true"
+                [class.border-brand-selection]="selectedPaymentMethod()?.id === method.id"
+                [class.ring-4]="selectedPaymentMethod()?.id === method.id"
+                [class.ring-brand-selection/20]="selectedPaymentMethod()?.id === method.id"
+                [class.border-slate-200]="selectedPaymentMethod()?.id !== method.id"
+                [class.dark:border-slate-700]="selectedPaymentMethod()?.id !== method.id"
+                [class.hover:border-brand-selection/50]="selectedPaymentMethod()?.id !== method.id"
+                [class.text-brand-blue]="true"
+                (click)="selectPaymentMethod(method)"
+              >
+                <span class="material-symbols-outlined text-4xl mb-2">{{ method.icon }}</span>
+                <span class="text-base font-bold">{{ method.label }}</span>
+                @if (method.description) {
+                  <span class="text-xs font-medium text-slate-500 mt-1">{{ method.description }}</span>
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Payment Form -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex-1 flex flex-col gap-6">
+            <div class="flex flex-col md:flex-row gap-6">
+              <div class="flex-1 space-y-4">
+                <div>
+                  <label class="text-sm font-bold mb-2 block text-brand-blue dark:text-slate-300">Valor a Receber</label>
+                  <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-xl text-brand-blue">R$</span>
+                    <input 
+                      class="w-full pl-12 pr-4 py-4 text-3xl font-black bg-slate-50 dark:bg-slate-900 border-0 rounded-xl focus:ring-2 focus:ring-brand-selection" 
+                      type="text" 
+                      [value]="paymentAmount()"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                  @for (num of ['1','2','3','4','5','6','7','8','9','C','0','backspace']; track num) {
+                    <button 
+                      class="h-16 bg-slate-100 dark:bg-slate-700 rounded-lg text-2xl font-bold flex items-center justify-center active:scale-95 transition-transform hover:bg-slate-200"
+                      [class.text-red-600]="num === 'C'"
+                      (click)="onNumberClick(num)"
+                    >
+                      @if (num === 'backspace') {
+                        <span class="material-symbols-outlined">backspace</span>
+                      } @else {
+                        {{ num }}
+                      }
+                    </button>
+                  }
+                </div>
+              </div>
+              <div class="flex-1 space-y-4">
+                <div>
+                  <label class="text-sm font-bold mb-2 block text-brand-blue dark:text-slate-300">Plano de Parcelas</label>
+                  <select 
+                    class="w-full p-4 bg-slate-50 dark:bg-slate-900 border-0 rounded-xl focus:ring-2 focus:ring-brand-selection font-medium"
+                    [value]="selectedInstallments()"
+                    (change)="selectedInstallments.set(+$any($event.target).value)"
+                  >
+                    @for (option of getInstallmentOptions(); track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="p-4 bg-brand-blue/5 rounded-xl border border-brand-blue/10">
+                  <p class="text-sm font-bold mb-3 flex items-center gap-2 text-brand-blue">
+                    <span class="material-symbols-outlined text-brand-blue">info</span> Notas da Transação
+                  </p>
+                  <textarea 
+                    class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm" 
+                    placeholder="Observações internas..." 
+                    rows="3"
+                    [value]="transactionNotes()"
+                    (input)="transactionNotes.set($any($event.target).value)"
+                  ></textarea>
+                </div>
+                <div class="flex items-center gap-2 mt-4 p-4 border border-dashed border-slate-400 rounded-xl bg-slate-50/50">
+                  <span class="material-symbols-outlined text-slate-400">lock</span>
+                  <span class="text-sm font-medium text-slate-500 italic">Pagamento seguro Millena</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-700">
+              <div class="flex items-center justify-between mb-4 px-2">
+                <span class="text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider text-xs">Total Pendente</span>
+                <span class="text-xl font-black text-brand-blue dark:text-white">R$ {{ formatPrice(getRemainingAmount()) }}</span>
+              </div>
+              <button 
+                class="w-full py-6 bg-brand-yellow text-brand-blue rounded-xl text-xl font-black uppercase tracking-widest shadow-lg shadow-brand-yellow/30 hover:bg-brand-selection transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="getRemainingAmount() > 0 || !selectedPaymentMethod()"
+                (click)="finalizeOrder()"
+              >
+                <span class="material-symbols-outlined text-3xl">task_alt</span>
+                FINALIZAR VENDA
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>
