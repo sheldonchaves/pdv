@@ -22,7 +22,7 @@ export class OrderService {
       id: '1',
       type: 'credit_card',
       label: 'Cartão de Crédito (Salvo)',
-      icon: 'credit_card',
+      icon: 'credit-card',
       description: 'Visa final 4242',
       saved: true,
       lastDigits: '4242'
@@ -31,7 +31,7 @@ export class OrderService {
       id: '2',
       type: 'pix',
       label: 'Pix',
-      icon: 'qr_code_2',
+      icon: 'qr-code',
       description: 'Pagamento instantâneo',
       saved: false
     }

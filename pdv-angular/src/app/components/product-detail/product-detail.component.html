@@ -17,7 +17,7 @@
       </div>
       <div class="flex items-center gap-6">
         <div class="flex items-center gap-3 bg-background-light dark:bg-[#3d3a2e] px-4 py-2 rounded-lg">
-          <span class="material-symbols-outlined text-brand-blue dark:text-primary">person</span>
+          <i class="bi bi-person text-brand-blue dark:text-primary"></i>
           <span class="text-sm font-semibold">Vendedor: {{ userService.currentUser().name }}</span>
         </div>
         <div 
@@ -117,7 +117,7 @@
           <div class="lg:col-span-3 flex flex-col">
             <div class="bg-white dark:bg-[#2a271d] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#3d3a2e] h-full">
               <div class="flex items-center gap-2 mb-6">
-                <span class="material-symbols-outlined text-brand-blue dark:text-primary">inventory_2</span>
+                <i class="bi bi-box-seam text-brand-blue dark:text-primary text-xl"></i>
                 <h2 class="text-lg font-bold">Disponibilidade</h2>
               </div>
               <div class="flex flex-col gap-4">
@@ -144,9 +144,7 @@
                         [class.bg-red-100]="!store.available"
                         [class.text-red-600]="!store.available"
                       >
-                        <span class="material-symbols-outlined text-[16px] font-bold">
-                          {{ store.available ? 'check' : 'close' }}
-                        </span>
+                        <i class="bi text-[16px] font-bold" [class.bi-check]="store.available" [class.bi-x]="!store.available"></i>
                       </span>
                     </div>
                     <div class="mt-3 flex items-baseline gap-1">
@@ -173,7 +171,7 @@
           class="w-full sm:w-auto min-w-[180px] h-14 px-8 bg-brand-blue hover:bg-[#00426d] text-white rounded-lg flex items-center justify-center gap-2 font-bold transition-colors"
           (click)="router.navigate(['/'])"
         >
-          <span class="material-symbols-outlined">arrow_back</span>
+          <i class="bi bi-arrow-left"></i>
           <span>Voltar</span>
         </button>
         <div class="flex flex-col sm:flex-row w-full sm:w-auto items-center gap-4">
@@ -186,7 +184,7 @@
             [disabled]="product()!.stock === 0"
             (click)="addToCart()"
           >
-            <span class="material-symbols-outlined font-bold">shopping_cart</span>
+            <i class="bi bi-cart-plus font-bold"></i>
             <span>Adicionar ao Carrinho</span>
           </button>
         </div>

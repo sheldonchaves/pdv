@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
@@ -13,8 +13,13 @@ import { CartService } from '../../services/cart.service';
 export class CartSidebarComponent {
   cart = computed(() => this.cartService.cart());
   itemCount = computed(() => this.cartService.itemCount());
+  minimized = signal<boolean>(false);
 
   constructor(public cartService: CartService) {}
+
+  toggleMinimize(): void {
+    this.minimized.set(!this.minimized());
+  }
 
   increaseQuantity(productId: string, currentQuantity: number): void {
     this.cartService.updateQuantity(productId, currentQuantity + 1);
