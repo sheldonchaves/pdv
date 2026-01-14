@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Cart, CartItem } from '../models/cart.model';
+import { Cart, CartItem, DiscountCoupon } from '../models/cart.model';
 import { Product } from '../models/product.model';
 
 @Injectable({
@@ -7,20 +7,40 @@ import { Product } from '../models/product.model';
 })
 export class CartService {
   private cartItems = signal<CartItem[]>([]);
+  private appliedCoupon = signal<DiscountCoupon | null>(null);
+
+  // Cupons mockados para demonstração
+  private validCoupons: DiscountCoupon[] = [
+    { code: 'DESCONTO10', discount: 0, discountPercent: 10, type: 'percent' },
+    { code: 'CUPOM50', discount: 50, type: 'fixed' },
+    { code: 'PROMO20', discount: 0, discountPercent: 20, type: 'percent' },
+    { code: 'FREEGRATIS', discount: 100, type: 'fixed' }
+  ];
 
   cart = computed(() => {
     const items = this.cartItems();
     const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     const taxes = subtotal * 0.08; // 8% de impostos
-    const discount = 0;
+    const coupon = this.appliedCoupon();
+    
+    let discount = 0;
+    if (coupon) {
+      if (coupon.type === 'fixed') {
+        discount = coupon.discount;
+      } else if (coupon.type === 'percent' && coupon.discountPercent) {
+        discount = (subtotal * coupon.discountPercent) / 100;
+      }
+    }
+    
     const deliveryFee = 0;
-    const total = subtotal + taxes + deliveryFee - discount;
+    const total = Math.max(0, subtotal + taxes + deliveryFee - discount);
 
     return {
       items,
       subtotal,
       taxes,
       discount,
+      coupon: coupon || undefined,
       deliveryFee,
       total
     } as Cart;
@@ -62,9 +82,30 @@ export class CartService {
 
   clearCart(): void {
     this.cartItems.set([]);
+    this.appliedCoupon.set(null);
   }
 
   getCartItems(): CartItem[] {
     return this.cartItems();
+  }
+
+  applyCoupon(code: string): { success: boolean; message: string } {
+    const upperCode = code.toUpperCase().trim();
+    const coupon = this.validCoupons.find(c => c.code === upperCode);
+    
+    if (!coupon) {
+      return { success: false, message: 'Cupom inválido' };
+    }
+    
+    this.appliedCoupon.set(coupon);
+    return { success: true, message: 'Cupom aplicado com sucesso!' };
+  }
+
+  removeCoupon(): void {
+    this.appliedCoupon.set(null);
+  }
+
+  getAppliedCoupon(): DiscountCoupon | null {
+    return this.appliedCoupon();
   }
 }

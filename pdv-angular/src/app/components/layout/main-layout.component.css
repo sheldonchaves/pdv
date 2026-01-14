@@ -1,1 +1,69 @@
-/* Component specific styles if needed */
+/* Otimizações para tablet em pé (portrait) */
+@media (max-width: 1024px) and (orientation: portrait) {
+  /* Header mais compacto */
+  header {
+    padding: 0.5rem 1rem;
+  }
+
+  /* Ajustar tamanho do logo e título */
+  header h2 {
+    font-size: 1rem;
+  }
+
+  /* Campo de busca mais compacto */
+  header label {
+    min-width: 200px !important;
+    max-width: 300px !important;
+  }
+
+  /* Menu lateral sempre minimizado em tablets */
+  aside {
+    width: 6rem !important;
+    min-width: 6rem !important;
+    max-width: 6rem !important;
+  }
+
+  /* Conteúdo principal ocupa mais espaço */
+  main {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Ajustes gerais para telas menores */
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  header > div:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+
+  header label {
+    width: 100%;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Animação para o scanner */
+@keyframes scan-line {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.scan-line {
+  animation: scan-line 1.5s ease-in-out infinite;
+}

@@ -1,60 +1,165 @@
 <div class="flex flex-col h-full">
-  <div class="flex gap-3 p-4 bg-white border-b border-slate-200 overflow-x-auto no-scrollbar shrink-0">
-    <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-50 pl-4 pr-3 border border-slate-200 hover:bg-slate-100 transition-colors">
-      <p class="text-slate-700 text-sm font-medium">Em Estoque</p>
+  <div class="flex gap-3 p-4 bg-white border-b border-slate-200 overflow-x-auto no-scrollbar shrink-0 relative">
+    <button 
+      class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-4 pr-3 border transition-colors"
+      [class.bg-brand-yellow]="filterInStock()"
+      [class.text-brand-blue]="filterInStock()"
+      [class.border-brand-yellow]="filterInStock()"
+      [class.bg-slate-50]="!filterInStock()"
+      [class.border-slate-200]="!filterInStock()"
+      [class.text-slate-700]="!filterInStock()"
+      [class.hover:bg-slate-100]="!filterInStock()"
+      (click)="toggleInStockFilter()"
+    >
+      <p class="text-sm font-medium">Em Estoque</p>
       <i class="bi bi-chevron-down text-lg text-brand-orange"></i>
     </button>
-    <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-50 pl-4 pr-3 border border-slate-200 hover:bg-slate-100 transition-colors">
-      <p class="text-slate-700 text-sm font-medium">Principais Marcas</p>
+    <div class="relative">
+      <button 
+        class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-50 pl-4 pr-3 border border-slate-200 hover:bg-slate-100 transition-colors relative"
+        (click)="showBrandFilter = !showBrandFilter"
+      >
+        <p class="text-slate-700 text-sm font-medium">Principais Marcas</p>
+        <i class="bi bi-chevron-down text-lg text-brand-orange"></i>
+        @if (filterBrand()) {
+          <span class="absolute -top-1 -right-1 bg-brand-orange text-white text-[10px] font-bold rounded-full size-4 flex items-center justify-center">1</span>
+        }
+      </button>
+      @if (showBrandFilter) {
+        <div class="absolute top-full left-0 z-50 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg p-2 max-h-60 overflow-y-auto min-w-[200px]">
+          <button 
+            class="w-full text-left px-3 py-2 rounded hover:bg-slate-50 text-sm"
+            [class.bg-brand-yellow]="filterBrand() === null"
+            [class.font-bold]="filterBrand() === null"
+            (click)="selectBrand(null); showBrandFilter = false"
+          >
+            Todas as Marcas
+          </button>
+          @for (brand of brands(); track brand) {
+            <button 
+              class="w-full text-left px-3 py-2 rounded hover:bg-slate-50 text-sm"
+              [class.bg-brand-yellow]="filterBrand() === brand"
+              [class.font-bold]="filterBrand() === brand"
+              (click)="selectBrand(brand); showBrandFilter = false"
+            >
+              {{ brand }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+    <button 
+      class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-4 pr-3 border transition-colors"
+      [class.bg-brand-yellow]="filterOnSale()"
+      [class.text-brand-blue]="filterOnSale()"
+      [class.border-brand-yellow]="filterOnSale()"
+      [class.bg-slate-50]="!filterOnSale()"
+      [class.border-slate-200]="!filterOnSale()"
+      [class.text-slate-700]="!filterOnSale()"
+      [class.hover:bg-slate-100]="!filterOnSale()"
+      (click)="toggleOnSaleFilter()"
+    >
+      <p class="text-sm font-medium">Promoções</p>
       <i class="bi bi-chevron-down text-lg text-brand-orange"></i>
     </button>
-    <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-50 pl-4 pr-3 border border-slate-200 hover:bg-slate-100 transition-colors">
-      <p class="text-slate-700 text-sm font-medium">Promoções</p>
-      <i class="bi bi-chevron-down text-lg text-brand-orange"></i>
-    </button>
-    <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-50 pl-4 pr-3 border border-slate-200 hover:bg-slate-100 transition-colors">
-      <p class="text-slate-700 text-sm font-medium">Faixa de Preço</p>
-      <i class="bi bi-chevron-down text-lg text-brand-orange"></i>
-    </button>
+    <div class="relative">
+      <button 
+        class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-50 pl-4 pr-3 border border-slate-200 hover:bg-slate-100 transition-colors relative"
+        (click)="showPriceFilter = !showPriceFilter"
+      >
+        <p class="text-slate-700 text-sm font-medium">Faixa de Preço</p>
+        <i class="bi bi-chevron-down text-lg text-brand-orange"></i>
+        @if (filterMinPrice() !== null || filterMaxPrice() !== null) {
+          <span class="absolute -top-1 -right-1 bg-brand-orange text-white text-[10px] font-bold rounded-full size-4 flex items-center justify-center">1</span>
+        }
+      </button>
+      @if (showPriceFilter) {
+        <div class="absolute top-full left-0 z-50 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg p-2 max-h-60 overflow-y-auto min-w-[200px]">
+          <button 
+            class="w-full text-left px-3 py-2 rounded hover:bg-slate-50 text-sm"
+            [class.bg-brand-yellow]="filterMinPrice() === null && filterMaxPrice() === null"
+            [class.font-bold]="filterMinPrice() === null && filterMaxPrice() === null"
+            (click)="selectPriceRange(null, null); showPriceFilter = false"
+          >
+            Todas as Faixas
+          </button>
+          @for (range of priceRanges(); track range.label) {
+            <button 
+              class="w-full text-left px-3 py-2 rounded hover:bg-slate-50 text-sm"
+              [class.bg-brand-yellow]="filterMinPrice() === range.min && filterMaxPrice() === range.max"
+              [class.font-bold]="filterMinPrice() === range.min && filterMaxPrice() === range.max"
+              (click)="selectPriceRange(range.min, range.max); showPriceFilter = false"
+            >
+              {{ range.label }}
+            </button>
+          }
+        </div>
+      }
+    </div>
   </div>
-  <div class="p-6 flex-1 overflow-y-auto">
-    <h2 class="text-brand-blue text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">
-      Resultados em {{ getCategoryName() }}
+
+  <div class="p-4 md:p-6 flex-1 overflow-y-auto relative">
+    <h2 class="text-brand-blue text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">
+      Resultados em {{ getCategoryName() }} 
+      @if (filteredProducts().length !== products().length) {
+        <span class="text-sm font-normal text-slate-500">({{ filteredProducts().length }} de {{ products().length }})</span>
+      }
     </h2>
-    <div class="flex flex-col gap-4">
-      @for (product of products(); track product.id) {
-        <div class="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow">
+    <div class="flex flex-col gap-4 md:gap-6">
+      @for (product of filteredProducts(); track product.id) {
+        <div class="flex gap-4 md:gap-6 bg-white p-5 md:p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer" (click)="goToProductDetail(product.id)">
           <div 
-            class="w-32 h-32 bg-center bg-no-repeat bg-cover rounded-lg cursor-pointer shrink-0"
+            class="w-48 h-48 md:w-64 md:h-64 lg:w-72 lg:h-72 bg-center bg-no-repeat bg-cover rounded-lg shrink-0"
             [style.background-image]="'url(' + product.images[0] + ')'"
-            (click)="goToProductDetail(product.id)"
           ></div>
           <div class="flex flex-1 flex-col justify-between min-w-0">
             <div class="flex-1">
-              <p class="text-slate-900 text-lg font-semibold leading-tight cursor-pointer mb-1" (click)="goToProductDetail(product.id)">{{ product.name }}</p>
-              <p class="text-slate-500 text-sm mb-2">{{ product.description }}</p>
-              <div class="flex items-center gap-4">
-                <p class="text-slate-500 text-xs">SKU: <span class="font-mono">{{ product.sku }}</span></p>
-                <p class="text-[10px] font-bold uppercase" [ngClass]="getStockStatus(product.stock).class">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <p class="text-slate-900 text-xl md:text-2xl font-bold leading-tight flex-1">{{ product.name }}</p>
+                @if (isProductOnSale(product)) {
+                  <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shrink-0">
+                    -{{ getDiscountPercentage(product) }}%
+                  </span>
+                }
+              </div>
+              @if (product.brand) {
+                <p class="text-slate-400 text-sm mb-2 font-medium">{{ product.brand }}</p>
+              }
+              <p class="text-slate-600 text-sm md:text-base mb-3 line-clamp-2">{{ product.description }}</p>
+              <div class="flex items-center gap-4 flex-wrap">
+                <p class="text-slate-500 text-sm">SKU: <span class="font-mono font-semibold">{{ product.sku }}</span></p>
+                <p class="text-xs font-bold uppercase" [ngClass]="getStockStatus(product.stock).class">
                   {{ getStockStatus(product.stock).text }}
                 </p>
               </div>
             </div>
-            <div class="flex items-center justify-between mt-3">
-              <p class="text-brand-blue text-2xl font-bold">R$ {{ product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</p>
+            <div class="flex items-center justify-between mt-4 flex-wrap gap-3">
+              <div class="flex flex-col">
+                @if (product.originalPrice && product.originalPrice > product.price) {
+                  <p class="text-slate-400 text-sm line-through">R$ {{ product.originalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</p>
+                }
+                <p class="text-brand-blue text-3xl md:text-4xl font-black">R$ {{ product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</p>
+              </div>
               <button 
-                class="bg-brand-yellow text-brand-blue font-bold px-6 py-2 rounded-lg flex items-center justify-center gap-2 hover:brightness-105 active:scale-95 transition-all disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
+                class="bg-brand-yellow text-brand-blue font-bold px-6 md:px-8 py-3 md:py-4 rounded-lg flex items-center justify-center gap-2 hover:brightness-105 active:scale-95 transition-all disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-base md:text-lg shrink-0 cursor-pointer"
                 [disabled]="product.stock === 0"
-                (click)="addToCart(product)"
+                (click)="addToCart(product); $event.stopPropagation()"
               >
                 @if (product.stock > 0) {
-                  <i class="bi bi-cart-plus"></i> Adicionar
+                  <i class="bi bi-cart-plus text-xl"></i> Adicionar
                 } @else {
-                  <i class="bi bi-x-circle"></i> Esgotado
+                  <i class="bi bi-x-circle text-xl"></i> Esgotado
                 }
               </button>
             </div>
           </div>
+        </div>
+      }
+      @if (filteredProducts().length === 0) {
+        <div class="flex flex-col items-center justify-center py-12 text-slate-400">
+          <i class="bi bi-search text-6xl mb-4"></i>
+          <p class="text-lg font-medium">Nenhum produto encontrado</p>
+          <p class="text-sm mt-2">Tente ajustar os filtros</p>
         </div>
       }
     </div>

@@ -1,11 +1,34 @@
 import { CartItem } from './cart.model';
 
+export interface SavedCard {
+  id: string;
+  lastDigits: string;
+  brand: string; // 'Visa', 'Mastercard', 'Elo', etc
+  cardholderName: string;
+  expiryMonth: number;
+  expiryYear: number;
+}
+
+export interface Address {
+  id: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  isDefault?: boolean;
+}
+
 export interface Customer {
   id: string;
   name: string;
   cpf: string;
   avatar?: string;
   loyaltyPoints?: number;
+  savedCards?: SavedCard[];
+  addresses?: Address[];
 }
 
 export interface PaymentMethod {
@@ -23,6 +46,7 @@ export interface Order {
   orderNumber: string;
   items: CartItem[];
   customer: Customer;
+  deliveryAddress?: Address;
   subtotal: number;
   taxes: number;
   discount: number;
@@ -32,4 +56,5 @@ export interface Order {
   installments?: number;
   notes?: string;
   createdAt: Date;
+  status?: string;
 }

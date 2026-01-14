@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { Product } from '../../models/product.model';
@@ -12,9 +13,10 @@ import { Product } from '../../models/product.model';
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.css'
 })
-export class ProductDetailComponent implements OnInit {
+export class ProductDetailComponent implements OnInit, OnDestroy {
   product = signal<Product | null>(null);
   selectedImageIndex = signal<number>(0);
+  private routeSubscription?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,11 +26,28 @@ export class ProductDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Carregar produto inicial
+    this.loadProduct();
+    
+    // Escutar mudanças nos parâmetros da rota
+    this.routeSubscription = this.route.paramMap.subscribe(() => {
+      this.loadProduct();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
+
+  private loadProduct(): void {
     const productId = this.route.snapshot.paramMap.get('id');
     if (productId) {
       const product = this.productService.getProductById(productId);
       if (product) {
         this.product.set(product);
+        this.selectedImageIndex.set(0); // Resetar índice da imagem ao trocar produto
       } else {
         this.router.navigate(['/']);
       }

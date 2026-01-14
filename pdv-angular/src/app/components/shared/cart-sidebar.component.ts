@@ -13,7 +13,7 @@ import { CartService } from '../../services/cart.service';
 export class CartSidebarComponent {
   cart = computed(() => this.cartService.cart());
   itemCount = computed(() => this.cartService.itemCount());
-  minimized = signal<boolean>(false);
+  minimized = signal<boolean>(true); // Fechado por padrão para tablet
 
   constructor(public cartService: CartService) {}
 

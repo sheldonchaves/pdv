@@ -51,6 +51,55 @@
             </div>
           </div>
 
+          <!-- Address Selection -->
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-bold text-brand-blue dark:text-white mb-4">Endereço de Entrega</h3>
+            <div class="flex flex-col gap-3">
+              @for (address of getAddresses(); track address.id) {
+                <button
+                  class="flex items-start gap-3 p-3 rounded-lg border-2 text-left transition-all"
+                  [class.bg-brand-yellow/10]="selectedAddress()?.id === address.id"
+                  [class.border-brand-yellow]="selectedAddress()?.id === address.id"
+                  [class.ring-2]="selectedAddress()?.id === address.id"
+                  [class.ring-brand-yellow/20]="selectedAddress()?.id === address.id"
+                  [class.bg-slate-50]="selectedAddress()?.id !== address.id"
+                  [class.dark:bg-slate-900]="selectedAddress()?.id !== address.id"
+                  [class.border-slate-200]="selectedAddress()?.id !== address.id"
+                  [class.dark:border-slate-700]="selectedAddress()?.id !== address.id"
+                  [class.hover:border-brand-yellow/50]="selectedAddress()?.id !== address.id"
+                  (click)="selectAddress(address)"
+                >
+                  <div class="size-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center"
+                    [class.bg-brand-yellow]="selectedAddress()?.id === address.id"
+                    [class.border-brand-yellow]="selectedAddress()?.id === address.id"
+                    [class.border-slate-300]="selectedAddress()?.id !== address.id"
+                  >
+                    @if (selectedAddress()?.id === address.id) {
+                      <i class="bi bi-check text-brand-blue text-xs font-bold"></i>
+                    }
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <p class="font-bold text-sm text-slate-900 dark:text-white">
+                        {{ address.street }}, {{ address.number }}
+                        @if (address.complement) {
+                          - {{ address.complement }}
+                        }
+                      </p>
+                      @if (address.isDefault) {
+                        <span class="text-xs bg-brand-blue text-white px-2 py-0.5 rounded-full font-bold">Padrão</span>
+                      }
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                      {{ address.neighborhood }}, {{ address.city }} - {{ address.state }}
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">CEP: {{ address.zipCode }}</p>
+                  </div>
+                </button>
+              }
+            </div>
+          </div>
+
           <!-- Order Summary -->
           <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[500px]">
             <h3 class="text-lg font-bold px-4 py-4 border-b border-slate-200 dark:border-slate-700 text-brand-blue dark:text-white">
@@ -125,75 +174,89 @@
 
           <!-- Payment Form -->
           <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex-1 flex flex-col gap-6">
-            <div class="flex flex-col md:flex-row gap-6">
-              <div class="flex-1 space-y-4">
-                <div>
-                  <label class="text-sm font-bold mb-2 block text-brand-blue dark:text-slate-300">Valor a Receber</label>
-                  <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-xl text-brand-blue">R$</span>
-                    <input 
-                      class="w-full pl-12 pr-4 py-4 text-3xl font-black bg-slate-50 dark:bg-slate-900 border-0 rounded-xl focus:ring-2 focus:ring-brand-selection" 
-                      type="text" 
-                      [value]="paymentAmount()"
-                      readonly
-                    />
-                  </div>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                  @for (num of ['1','2','3','4','5','6','7','8','9','C','0','backspace']; track num) {
-                    <button 
-                      class="h-16 bg-slate-100 dark:bg-slate-700 rounded-lg text-2xl font-bold flex items-center justify-center active:scale-95 transition-transform hover:bg-slate-200"
-                      [class.text-red-600]="num === 'C'"
-                      (click)="onNumberClick(num)"
+            @if (selectedPaymentMethod()?.type === 'credit_card') {
+              <!-- Cartões Pré-cadastrados -->
+              <div class="space-y-4">
+                <label class="text-sm font-bold mb-2 block text-brand-blue dark:text-slate-300">Cartões Pré-cadastrados</label>
+                <div class="grid grid-cols-1 gap-3">
+                  @for (card of getSavedCards(); track card.id) {
+                    <button
+                      class="flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left"
+                      [class.bg-brand-yellow/10]="selectedCard()?.id === card.id"
+                      [class.border-brand-yellow]="selectedCard()?.id === card.id"
+                      [class.ring-4]="selectedCard()?.id === card.id"
+                      [class.ring-brand-yellow/20]="selectedCard()?.id === card.id"
+                      [class.bg-slate-50]="selectedCard()?.id !== card.id"
+                      [class.dark:bg-slate-900]="selectedCard()?.id !== card.id"
+                      [class.border-slate-200]="selectedCard()?.id !== card.id"
+                      [class.dark:border-slate-700]="selectedCard()?.id !== card.id"
+                      [class.hover:border-brand-yellow/50]="selectedCard()?.id !== card.id"
+                      (click)="selectCard(card)"
                     >
-                      @if (num === 'backspace') {
-                        <i class="bi bi-backspace"></i>
-                      } @else {
-                        {{ num }}
+                      <div class="flex items-center gap-4 flex-1">
+                        <div class="size-12 bg-brand-blue/10 rounded-lg flex items-center justify-center shrink-0">
+                          <i class="bi bi-{{ getCardBrandIcon(card.brand) }} text-2xl text-brand-blue"></i>
+                        </div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                          <p class="font-bold text-base text-slate-900 dark:text-white">{{ card.cardholderName }}</p>
+                          <div class="flex items-center gap-2 mt-1">
+                            <span class="text-slate-500 dark:text-slate-400 text-sm">•••• •••• •••• {{ card.lastDigits }}</span>
+                            <span class="text-slate-400">•</span>
+                            <span class="text-slate-500 dark:text-slate-400 text-sm">{{ formatCardExpiry(card.expiryMonth, card.expiryYear) }}</span>
+                          </div>
+                          <span class="text-xs font-medium text-slate-400 mt-1">{{ card.brand }}</span>
+                        </div>
+                      </div>
+                      @if (selectedCard()?.id === card.id) {
+                        <div class="size-6 bg-brand-yellow rounded-full flex items-center justify-center shrink-0">
+                          <i class="bi bi-check text-brand-blue text-sm font-bold"></i>
+                        </div>
                       }
                     </button>
                   }
                 </div>
               </div>
-              <div class="flex-1 space-y-4">
-                <div>
-                  <label class="text-sm font-bold mb-2 block text-brand-blue dark:text-slate-300">Plano de Parcelas</label>
-                  <select 
-                    class="w-full p-4 bg-slate-50 dark:bg-slate-900 border-0 rounded-xl focus:ring-2 focus:ring-brand-selection font-medium"
-                    [value]="selectedInstallments()"
-                    (change)="selectedInstallments.set(+$any($event.target).value)"
-                  >
-                    @for (option of getInstallmentOptions(); track option.value) {
-                      <option [value]="option.value">{{ option.label }}</option>
-                    }
-                  </select>
-                </div>
-                <div class="p-4 bg-brand-blue/5 rounded-xl border border-brand-blue/10">
-                  <p class="text-sm font-bold mb-3 flex items-center gap-2 text-brand-blue">
-                    <i class="bi bi-info-circle text-brand-blue"></i> Notas da Transação
-                  </p>
-                  <textarea 
-                    class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm" 
-                    placeholder="Observações internas..." 
-                    rows="3"
-                    [value]="transactionNotes()"
-                    (input)="transactionNotes.set($any($event.target).value)"
-                  ></textarea>
-                </div>
-                <div class="flex items-center gap-2 mt-4 p-4 border border-dashed border-slate-400 rounded-xl bg-slate-50/50">
-                  <i class="bi bi-lock text-slate-400"></i>
-                  <span class="text-sm font-medium text-slate-500 italic">Pagamento seguro Millena</span>
-                </div>
+            }
+            
+            <div class="flex flex-col gap-6">
+              <div>
+                <label class="text-sm font-bold mb-2 block text-brand-blue dark:text-slate-300">Plano de Parcelas</label>
+                <select 
+                  class="w-full p-4 bg-slate-50 dark:bg-slate-900 border-0 rounded-xl focus:ring-2 focus:ring-brand-selection font-medium"
+                  [value]="selectedInstallments()"
+                  (change)="selectedInstallments.set(+$any($event.target).value)"
+                >
+                  @for (option of getInstallmentOptions(); track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="p-4 bg-brand-blue/5 rounded-xl border border-brand-blue/10">
+                <p class="text-sm font-bold mb-3 flex items-center gap-2 text-brand-blue">
+                  <i class="bi bi-info-circle text-brand-blue"></i> Notas da Transação
+                </p>
+                <textarea 
+                  class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm" 
+                  placeholder="Observações internas..." 
+                  rows="3"
+                  [value]="transactionNotes()"
+                  (input)="transactionNotes.set($any($event.target).value)"
+                ></textarea>
+              </div>
+              <div class="flex items-center gap-2 p-4 border border-dashed border-slate-400 rounded-xl bg-slate-50/50">
+                <i class="bi bi-lock text-slate-400"></i>
+                <span class="text-sm font-medium text-slate-500 italic">Pagamento seguro Millena</span>
               </div>
             </div>
+            
             <div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-700">
               <div class="flex items-center justify-between mb-4 px-2">
-                <span class="text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider text-xs">Total Pendente</span>
-                <span class="text-xl font-black text-brand-blue dark:text-white">R$ {{ formatPrice(getRemainingAmount()) }}</span>
+                <span class="text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider text-xs">Total</span>
+                <span class="text-xl font-black text-brand-blue dark:text-white">R$ {{ formatPrice(orderService.getCurrentOrder()!.total) }}</span>
               </div>
               <button 
                 class="w-full py-6 bg-brand-yellow text-brand-blue rounded-xl text-xl font-black uppercase tracking-widest shadow-lg shadow-brand-yellow/30 hover:bg-brand-selection transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                [disabled]="getRemainingAmount() > 0 || !selectedPaymentMethod()"
+                [disabled]="!selectedPaymentMethod() || (selectedPaymentMethod()?.type === 'credit_card' && !selectedCard())"
                 (click)="finalizeOrder()"
               >
                 <i class="bi bi-check-circle text-3xl"></i>

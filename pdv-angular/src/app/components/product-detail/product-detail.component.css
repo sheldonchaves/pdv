@@ -1,1 +1,17 @@
-/* Component specific styles if needed */
+/* Garantir que o conteúdo não fique escondido atrás da barra fixa */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ajustes para a barra fixa */
+.fixed {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.dark .fixed {
+  background-color: rgba(26, 24, 17, 0.95);
+}

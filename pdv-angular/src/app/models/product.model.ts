@@ -4,9 +4,11 @@ export interface Product {
   sku: string;
   description: string;
   price: number;
+  originalPrice?: number;
   images: string[];
   category: string;
   stock: number;
+  brand?: string;
   specifications?: ProductSpecification;
   stockByStore?: StoreStock[];
 }

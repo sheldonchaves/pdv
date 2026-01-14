@@ -1,1 +1,8 @@
-/* Component specific styles if needed */
+/* Otimizações para tablet em pé */
+@media (max-width: 1024px) and (orientation: portrait) {
+  aside {
+    width: 4rem !important;
+    min-width: 4rem !important;
+    max-width: 4rem !important;
+  }
+}
